@@ -38,14 +38,14 @@ public class ApiApp extends Application {
         banner.setFitWidth(640);
 
         // some labels to display information
-        Label notice = new Label("Modify the starter code to suit your needs.");
+        Label notice = new Label("Currently building! ;0");
 
         // setup scene
-        root.getChildren().addAll(banner, notice);
+        root.getChildren().addAll( banner, notice);
         scene = new Scene(root);
 
         // setup stage
-        stage.setTitle("ApiApp!");
+        stage.setTitle("FasterFood");
         stage.setScene(scene);
         stage.setOnCloseRequest(event -> Platform.exit());
         stage.sizeToScene();
