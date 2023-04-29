@@ -1,6 +1,7 @@
 package cs1302.api;
 
 import javafx.application.Application;
+import java.io.IOException;
 
 /**
  * Driver for the {@code ApiApp} class.
@@ -11,7 +12,7 @@ public class ApiDriver {
      * Main entry-point into the application.
      * @param args the command-line arguments.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         try {
             Application.launch(ApiApp.class, args);
         } catch (UnsupportedOperationException e) {
