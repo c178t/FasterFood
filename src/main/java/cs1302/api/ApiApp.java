@@ -50,6 +50,7 @@ public class ApiApp extends Application {
     HBox botHbox;
     Font fsize;
     String jsonString = "";
+    Label locationBanner;
 
     /**
      * Constructs an {@code ApiApp} object. This default (i.e., no argument)
@@ -69,6 +70,7 @@ public class ApiApp extends Application {
         choice3.setPrefHeight(50.0);
         choice4.setPrefHeight(50.0);
         choice5.setPrefHeight(50.0);
+        locationBanner = new Label(" ");
 
         find = new Button("FIND");
         find.setPrefWidth(400);
@@ -98,7 +100,8 @@ public class ApiApp extends Application {
         // setup scene
         botHbox.getChildren().addAll(find);
         HBox.setHgrow(find, Priority.ALWAYS);
-        root.getChildren().addAll( banner, choice1, choice2, choice3, choice4, choice5, botHbox);
+        root.getChildren().addAll( banner, choice1, choice2, choice3, choice4, choice5, botHbox,
+            locationBanner);
 
 
         Runnable task1 = () -> {
@@ -143,7 +146,7 @@ public class ApiApp extends Application {
             System.out.println("********** PRETTY JSON STRING: **********");
             System.out.println(GSON.toJson(ipResponse));
             System.out.println("********** PARSED RESULTS: **********");
-
+            locationBanner.setText("Device Location: " + ipResponse.city);
         } catch (Exception e) {
             System.out.println("exception occured");
         }
