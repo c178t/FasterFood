@@ -20,6 +20,14 @@ import java.net.URLConnection;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import java.util.concurrent.ThreadLocalRandom;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.net.http.HttpRequest;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,7 +44,14 @@ public class ApiApp extends Application {
         String city;
         String longitude;
         String latitude;
-    } // IpResult
+    } // IpResponse
+
+    private static class LocalResponse {
+        String name;
+        String latitude;
+        String longitude;
+        String full_address;
+    }
 
     Stage stage;
     Scene scene;
@@ -51,6 +66,8 @@ public class ApiApp extends Application {
     Font fsize;
     String jsonString = "";
     Label locationBanner;
+    String localJson = "";
+    IpResponse ipResponse;
 
     /**
      * Constructs an {@code ApiApp} object. This default (i.e., no argument)
@@ -106,10 +123,12 @@ public class ApiApp extends Application {
 
         Runnable task1 = () -> {
             getIp();
+
         };
 
         find.setOnAction(event -> {
             getIp();
+            getLocal();
 //            Thread trd = new Thread(task1);
 //            trd.setDaemon(true);
 //            trd.start();
@@ -128,27 +147,52 @@ public class ApiApp extends Application {
 
     private void getIp()  {
         try {
-            URL ipapi = new URL("https://ipapi.co/json/");
 
-            URLConnection c = ipapi.openConnection();
-            c.setRequestProperty("User-Agent", "java-ipapi-v1.02");
-            BufferedReader reader = new BufferedReader(
-                new InputStreamReader(c.getInputStream())
-                );
-            String line;
-            while ((line = reader.readLine()) != null)        {
-                System.out.println("this is loop " + line);
-                jsonString += line;
-            }
-            reader.close();
+            HttpRequest requestIp = HttpRequest.newBuilder()
+                .uri(URI.create("https://find-any-ip-address-or-domain-location-world-wide.p.rapidapi.com/iplocation?apikey=873dbe322aea47f89dcf729dcc8f60e8"))
+                .header("X-RapidAPI-Key", "62ba22f05emshe5b84bc85a06c93p1c699ejsn41e1adb9ef37")
+                .header("X-RapidAPI-Host",
+                "find-any-ip-address-or-domain-location-world-wide.p.rapidapi.com")
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+            HttpResponse<String> responseIp = HttpClient.newHttpClient()
+                .send(requestIp, HttpResponse.BodyHandlers.ofString());
+            jsonString = responseIp.body();
 
-            IpResponse ipResponse = GSON.fromJson(jsonString, ApiApp.IpResponse.class);
+            ipResponse = GSON.fromJson(jsonString, ApiApp.IpResponse.class);
+
             System.out.println("********** PRETTY JSON STRING: **********");
             System.out.println(GSON.toJson(ipResponse));
-            System.out.println("********** PARSED RESULTS: **********");
             locationBanner.setText("Device Location: " + ipResponse.city);
+
+
         } catch (Exception e) {
             System.out.println("exception occured");
+        }
+    }
+
+    private void getLocal() {
+        try {
+            String url = "https://local-business-data.p.rapidapi.com/search-nearby?query=fast%20food&lat="
+                + ipResponse.latitude + "&lng="
+                + ipResponse.longitude + "&limit=5&language=en&region=us";
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("X-RapidAPI-Key", "62ba22f05emshe5b84bc85a06c93p1c699ejsn41e1adb9ef37")
+                .header("X-RapidAPI-Host", "local-business-data.p.rapidapi.com")
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+            HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+            localJson = response.body();
+            System.out.println(localJson);
+            LocalResponse localResponse = GSON.fromJson(localJson, ApiApp.LocalResponse.class);
+            System.out.println("********** PRETTY JSON STRING: **********");
+            System.out.println(GSON.toJson(localResponse));
+
+
+        } catch (Exception e) {
+            System.out.println("java io exception");
         }
     }
 }
