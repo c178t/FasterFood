@@ -59,6 +59,20 @@ public class ApiApp extends Application {
         LocalResult[] data;
     }
 
+    private class DistanceResult {
+        String coordinate;
+        String distance;
+    }
+
+    private class DistanceResponse {
+        DistanceResult end_point_1;
+        DistanceResult end_point_2;
+        DistanceResult end_point_3;
+        DistanceResult end_point_4;
+        DistanceResult end_point_5;
+
+    }
+
     Stage stage;
     Scene scene;
     VBox root;
@@ -73,7 +87,9 @@ public class ApiApp extends Application {
     String jsonString = "";
     Label locationBanner;
     String localJson = "";
+    String distanceJson = "";
     IpResponse ipResponse;
+    LocalResponse localResponse;
     Set<String> set;
 
 
@@ -194,7 +210,8 @@ public class ApiApp extends Application {
                 .send(request, HttpResponse.BodyHandlers.ofString());
             localJson = response.body();
             System.out.println(localJson.trim());
-            LocalResponse localResponse = GSON.fromJson(localJson, ApiApp.LocalResponse.class);
+
+            localResponse = GSON.fromJson(localJson, ApiApp.LocalResponse.class);
 
             System.out.println("********** PRETTY JSON STRING: **********");
             System.out.println(GSON.toJson(localResponse));
@@ -203,7 +220,50 @@ public class ApiApp extends Application {
             System.out.println("********** Name Test: **********");
             System.out.println(localResponse.data[2].name);
 
+            choice1.setText(localResponse.data[0].name + "                  " + "distance: ");
+            choice2.setText(localResponse.data[1].name + "                  " + "distance: ");
+            choice3.setText(localResponse.data[2].name + "                  " + "distance: ");
+            choice4.setText(localResponse.data[3].name + "                  " + "distance: ");
+            choice5.setText(localResponse.data[4].name + "                  " + "distance: ");
 
+
+        } catch (Exception e) {
+            System.out.println("java io exception");
+        }
+    }
+
+    private void getDistance() {
+        try {
+            HttpRequest requestDistance = HttpRequest.newBuilder()
+                .uri(URI.create("https://distance-calculator.p.rapidapi.com/v1/one_to_many?start_point="
+                + "(" + ipResponse.latitude + "%2C" + ipResponse.longitude + ")"
+                + "&end_point_1="
+                + "(" + localResponse.data[0].latitude + "%2C" + localResponse.data[0].longitude + ")"
+                + "&end_point_2="
+                + "(" + localResponse.data[1].latitude + "%2C" + localResponse.data[1].longitude + ")"
+                + "&end_point_3="
+                + "(" + localResponse.data[2].latitude + "%2C" + localResponse.data[2].longitude + ")"
+                + "&end_point_4="
+                + "(" + localResponse.data[3].latitude + "%2C" + localResponse.data[3].longitude + ")"
+                + "&end_point_5="
+                + "(" + localResponse.data[4].latitude + "%2C" + localResponse.data[4].longitude + ")"
+                + "&unit=miles&decimal_places=1"))
+                .header("Content-Type", "application/json")
+                .header("X-RapidAPI-Key", "62ba22f05emshe5b84bc85a06c93p1c699ejsn41e1adb9ef37")
+                .header("X-RapidAPI-Host", "distance-calculator.p.rapidapi.com")
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+            HttpResponse<String> responseDistance = HttpClient.newHttpClient()
+                .send(requestDistance, HttpResponse.BodyHandlers.ofString());
+
+            distanceJson = responseDistance.body();
+            System.out.println(distanceJson);
+
+            DistanceResponse distanceResponse = GSON
+                .fromJson(distanceJson, ApiApp.DistanceResponse.class);
+
+            System.out.println("********** PRETTY JSON STRING: **********");
+            System.out.println(GSON.toJson(distanceResponse));
         } catch (Exception e) {
             System.out.println("java io exception");
         }
