@@ -28,6 +28,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,6 +40,7 @@ public class ApiApp extends Application {
 
     private static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+
     private static class IpResponse {
         String ip;
         String city;
@@ -46,11 +48,15 @@ public class ApiApp extends Application {
         String latitude;
     } // IpResponse
 
-    private static class LocalResponse {
+    private class LocalResult {
         String name;
         String latitude;
         String longitude;
         String full_address;
+    }
+
+    private class LocalResponse {
+        LocalResult[] data;
     }
 
     Stage stage;
@@ -68,6 +74,8 @@ public class ApiApp extends Application {
     Label locationBanner;
     String localJson = "";
     IpResponse ipResponse;
+    Set<String> set;
+
 
     /**
      * Constructs an {@code ApiApp} object. This default (i.e., no argument)
@@ -185,11 +193,24 @@ public class ApiApp extends Application {
             HttpResponse<String> response = HttpClient.newHttpClient()
                 .send(request, HttpResponse.BodyHandlers.ofString());
             localJson = response.body();
-            System.out.println(localJson);
+            System.out.println(localJson.trim());
             LocalResponse localResponse = GSON.fromJson(localJson, ApiApp.LocalResponse.class);
+
             System.out.println("********** PRETTY JSON STRING: **********");
             System.out.println(GSON.toJson(localResponse));
 
+/**
+            set = new HashSet<String>();
+            for (int i = 0; i < 5; i++) {
+                LocalResult localResult = localResponse.results[i];
+                set.add(localResult.name);
+                set.add(localResult.latitude);
+                set.add(localResult.longitude);
+                set.add(localResult.full_address);
+            }
+            System.out.println("********** Name Test: **********");
+            System.out.println(set);
+*/
 
         } catch (Exception e) {
             System.out.println("java io exception");
