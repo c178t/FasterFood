@@ -199,18 +199,10 @@ public class ApiApp extends Application {
             System.out.println("********** PRETTY JSON STRING: **********");
             System.out.println(GSON.toJson(localResponse));
 
-/**
-            set = new HashSet<String>();
-            for (int i = 0; i < 5; i++) {
-                LocalResult localResult = localResponse.results[i];
-                set.add(localResult.name);
-                set.add(localResult.latitude);
-                set.add(localResult.longitude);
-                set.add(localResult.full_address);
-            }
+
             System.out.println("********** Name Test: **********");
-            System.out.println(set);
-*/
+            System.out.println(localResponse.data[2].name);
+
 
         } catch (Exception e) {
             System.out.println("java io exception");
