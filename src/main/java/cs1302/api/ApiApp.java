@@ -29,6 +29,7 @@ import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.*;
+import com.google.gson.annotations.SerializedName;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,10 +50,11 @@ public class ApiApp extends Application {
     } // IpResponse
 
     private class LocalResult {
+        @SerializedName("full_address") String fullAddress;
         String name;
         String latitude;
         String longitude;
-        String full_address;
+
     }
 
     private class LocalResponse {
@@ -65,11 +67,17 @@ public class ApiApp extends Application {
     }
 
     private class DistanceResponse {
-        DistanceResult end_point_1;
-        DistanceResult end_point_2;
-        DistanceResult end_point_3;
-        DistanceResult end_point_4;
-        DistanceResult end_point_5;
+        @SerializedName("end_point_1") DistanceResult endPoint1;
+        @SerializedName("end_point_2") DistanceResult endPoint2;
+        @SerializedName("end_point_3") DistanceResult endPoint3;
+        @SerializedName("end_point_4") DistanceResult endPoint4;
+        @SerializedName("end_point_5") DistanceResult endPoint5;
+
+//        DistanceResult end_point_1;
+//        DistanceResult end_point_2;
+//        DistanceResult end_point_3;
+//        DistanceResult end_point_4;
+//        DistanceResult end_point_5;
 
     }
 
@@ -220,7 +228,7 @@ public class ApiApp extends Application {
 
             System.out.println("********** Name Test: **********");
             System.out.println(localResponse.data[2].name);
-
+            System.out.println(localResponse.data[2].fullAddress);
 
 
         } catch (Exception e) {
@@ -266,11 +274,16 @@ public class ApiApp extends Application {
             System.out.println("********** PRETTY JSON STRING: **********");
             System.out.println(GSON.toJson(distanceResponse));
 
-            choice1.setText(localResponse.data[0].name + "                  " + distanceResponse.end_point_1.distance + " miles");
-            choice2.setText(localResponse.data[1].name + "                  " + distanceResponse.end_point_2.distance + " miles");
-            choice3.setText(localResponse.data[2].name + "                  " + distanceResponse.end_point_3.distance + " miles");
-            choice4.setText(localResponse.data[3].name + "                  " + distanceResponse.end_point_4.distance + " miles");
-            choice5.setText(localResponse.data[4].name + "                  " + distanceResponse.end_point_5.distance + " miles");
+            choice1.setText(localResponse.data[0].name + "                  "
+                + distanceResponse.endPoint1.distance + " miles");
+            choice2.setText(localResponse.data[1].name + "                  "
+                + distanceResponse.endPoint2.distance + " miles");
+            choice3.setText(localResponse.data[2].name + "                  "
+                + distanceResponse.endPoint3.distance + " miles");
+            choice4.setText(localResponse.data[3].name + "                  "
+                + distanceResponse.endPoint4.distance + " miles");
+            choice5.setText(localResponse.data[4].name + "                  "
+                + distanceResponse.endPoint5.distance + " miles");
 
 
 
