@@ -153,6 +153,7 @@ public class ApiApp extends Application {
         find.setOnAction(event -> {
             getIp();
             getLocal();
+            getDistance();
 //            Thread trd = new Thread(task1);
 //            trd.setDaemon(true);
 //            trd.start();
@@ -220,11 +221,6 @@ public class ApiApp extends Application {
             System.out.println("********** Name Test: **********");
             System.out.println(localResponse.data[2].name);
 
-            choice1.setText(localResponse.data[0].name + "                  " + "distance: ");
-            choice2.setText(localResponse.data[1].name + "                  " + "distance: ");
-            choice3.setText(localResponse.data[2].name + "                  " + "distance: ");
-            choice4.setText(localResponse.data[3].name + "                  " + "distance: ");
-            choice5.setText(localResponse.data[4].name + "                  " + "distance: ");
 
 
         } catch (Exception e) {
@@ -238,15 +234,20 @@ public class ApiApp extends Application {
                 .uri(URI.create("https://distance-calculator.p.rapidapi.com/v1/one_to_many?start_point="
                 + "(" + ipResponse.latitude + "%2C" + ipResponse.longitude + ")"
                 + "&end_point_1="
-                + "(" + localResponse.data[0].latitude + "%2C" + localResponse.data[0].longitude + ")"
+                + "("
+                + localResponse.data[0].latitude + "%2C" + localResponse.data[0].longitude + ")"
                 + "&end_point_2="
-                + "(" + localResponse.data[1].latitude + "%2C" + localResponse.data[1].longitude + ")"
+                + "("
+                + localResponse.data[1].latitude + "%2C" + localResponse.data[1].longitude + ")"
                 + "&end_point_3="
-                + "(" + localResponse.data[2].latitude + "%2C" + localResponse.data[2].longitude + ")"
+                + "("
+                + localResponse.data[2].latitude + "%2C" + localResponse.data[2].longitude + ")"
                 + "&end_point_4="
-                + "(" + localResponse.data[3].latitude + "%2C" + localResponse.data[3].longitude + ")"
+                + "("
+                + localResponse.data[3].latitude + "%2C" + localResponse.data[3].longitude + ")"
                 + "&end_point_5="
-                + "(" + localResponse.data[4].latitude + "%2C" + localResponse.data[4].longitude + ")"
+                + "("
+                + localResponse.data[4].latitude + "%2C" + localResponse.data[4].longitude + ")"
                 + "&unit=miles&decimal_places=1"))
                 .header("Content-Type", "application/json")
                 .header("X-RapidAPI-Key", "62ba22f05emshe5b84bc85a06c93p1c699ejsn41e1adb9ef37")
@@ -264,6 +265,15 @@ public class ApiApp extends Application {
 
             System.out.println("********** PRETTY JSON STRING: **********");
             System.out.println(GSON.toJson(distanceResponse));
+
+            choice1.setText(localResponse.data[0].name + "                  " + distanceResponse.end_point_1.distance + " miles");
+            choice2.setText(localResponse.data[1].name + "                  " + distanceResponse.end_point_2.distance + " miles");
+            choice3.setText(localResponse.data[2].name + "                  " + distanceResponse.end_point_3.distance + " miles");
+            choice4.setText(localResponse.data[3].name + "                  " + distanceResponse.end_point_4.distance + " miles");
+            choice5.setText(localResponse.data[4].name + "                  " + distanceResponse.end_point_5.distance + " miles");
+
+
+
         } catch (Exception e) {
             System.out.println("java io exception");
         }
