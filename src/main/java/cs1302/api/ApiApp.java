@@ -30,7 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.*;
 import com.google.gson.annotations.SerializedName;
-
+import javafx.scene.control.TextField;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -99,7 +99,7 @@ public class ApiApp extends Application {
     IpResponse ipResponse;
     LocalResponse localResponse;
     Set<String> set;
-
+    TextField cuisine;
 
     /**
      * Constructs an {@code ApiApp} object. This default (i.e., no argument)
@@ -127,6 +127,7 @@ public class ApiApp extends Application {
         fsize = new Font(35);
         find.setFont(fsize);
 
+        cuisine = new TextField("fast food");
 
     } // ApiApp
 
@@ -143,14 +144,16 @@ public class ApiApp extends Application {
         banner.setFitWidth(400);
         banner.setFitHeight(100);
 
+        cuisine.setPrefWidth(400);
+
         // some labels to display information
         Label notice = new Label("Currently building! ;0");
 
         // setup scene
         botHbox.getChildren().addAll(find);
         HBox.setHgrow(find, Priority.ALWAYS);
-        root.getChildren().addAll( banner, choice1, choice2, choice3, choice4, choice5, botHbox,
-            locationBanner);
+        root.getChildren().addAll( banner, choice1, choice2,
+            choice3, choice4, choice5, cuisine, botHbox, locationBanner);
 
 
         Runnable task1 = () -> {
@@ -180,7 +183,6 @@ public class ApiApp extends Application {
 
     private void getIp()  {
         try {
-
             HttpRequest requestIp = HttpRequest.newBuilder()
                 .uri(URI.create("https://find-any-ip-address-or-domain-location-world-wide.p.rapidapi.com/iplocation?apikey=873dbe322aea47f89dcf729dcc8f60e8"))
                 .header("X-RapidAPI-Key", "62ba22f05emshe5b84bc85a06c93p1c699ejsn41e1adb9ef37")
@@ -206,9 +208,18 @@ public class ApiApp extends Application {
 
     private void getLocal() {
         try {
-            String url = "https://local-business-data.p.rapidapi.com/search-nearby?query=fast%20food&lat="
+
+            String query = URLEncoder.encode(cuisine.getText(), StandardCharsets.UTF_8);
+
+            String queryUri = String.format("?query=%s", query);
+
+            String url = "https://local-business-data.p.rapidapi.com/search-nearby" + queryUri + "&lat="
                 + ipResponse.latitude + "&lng="
                 + ipResponse.longitude + "&limit=5&language=en&region=us";
+
+            System.out.println("queryURI " + queryUri);
+            System.out.println("url " + url);
+
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("X-RapidAPI-Key", "62ba22f05emshe5b84bc85a06c93p1c699ejsn41e1adb9ef37")
