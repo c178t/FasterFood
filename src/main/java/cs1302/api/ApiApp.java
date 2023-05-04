@@ -54,36 +54,21 @@ public class ApiApp extends Application {
         String latitude;
     } // IpResponse
 
-    private class LocalResult {
-        @SerializedName("full_address") String fullAddress;
-        String name;
-        String latitude;
-        String longitude;
 
+    private class LocalLocation {
+        @SerializedName("display_address") String[] displayAddress;
+    }
+
+
+    private class LocalResult {
+
+        String name;
+        double distance;
+        LocalLocation location;
     }
 
     private class LocalResponse {
-        LocalResult[] data;
-    }
-
-    private class DistanceResult {
-        String coordinate;
-        String distance;
-    }
-
-    private class DistanceResponse {
-        @SerializedName("end_point_1") DistanceResult endPoint1;
-        @SerializedName("end_point_2") DistanceResult endPoint2;
-        @SerializedName("end_point_3") DistanceResult endPoint3;
-        @SerializedName("end_point_4") DistanceResult endPoint4;
-        @SerializedName("end_point_5") DistanceResult endPoint5;
-
-//        DistanceResult end_point_1;
-//        DistanceResult end_point_2;
-//        DistanceResult end_point_3;
-//        DistanceResult end_point_4;
-//        DistanceResult end_point_5;
-
+        LocalResult[] businesses;
     }
 
     Stage stage;
@@ -241,11 +226,11 @@ public class ApiApp extends Application {
             c5address.setFont(new Font("Arial", 10));
             getIp();
             getLocal();
-            if (localResponse.data.length >= 5) {
+            if (localResponse.businesses.length >= 5) {
                 Platform.runLater(() -> getDistance());
                 Platform.runLater(() -> loading.setText(""));
                 Platform.runLater(() -> locationBanner.setText("Device Location: "
-                + ipResponse.city));
+                    + ipResponse.city));
             }
             find.setDisable(false);
         };
@@ -292,32 +277,35 @@ public class ApiApp extends Application {
     private void getLocal() {
         try {
 
-            String query = URLEncoder.encode(cuisine.getText(), StandardCharsets.UTF_8);
+            String term = URLEncoder.encode(cuisine.getText(), StandardCharsets.UTF_8);
 
-            String queryUri = String.format("?query=%s", query);
+            String termUri = String.format("term=%s", term);
 
-            String url = "https://local-business-data.p.rapidapi.com/search-nearby" + queryUri + "&lat="
-                + ipResponse.latitude + "&lng="
-                + ipResponse.longitude + "&limit=5&language=en&region=us";
+            String url = "https://api.yelp.com/v3/businesses/search?latitude="
+                + ipResponse.latitude + "&longitude="
+                + ipResponse.longitude + "&" + termUri + "&categories=&sort_by=best_match&limit=5";
 
-            System.out.println("queryURI " + queryUri);
+            System.out.println("termURI " + termUri);
             System.out.println("url " + url);
 
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .header("X-RapidAPI-Key", "62ba22f05emshe5b84bc85a06c93p1c699ejsn41e1adb9ef37")
-                .header("X-RapidAPI-Host", "local-business-data.p.rapidapi.com")
+                .header("accept", "application/json")
+                .header("Authorization",
+                "Bearer AMQwZRqCeVzqgaIWTmZ4ojvgv_L7sy-87QV2vAQPA4aqPOqrb-pfY5gDsnVTKo5705khygJqPY22iUFpOZ3L_sg48hAW3mGrka0LQktaRo5kSaQL0Spn2yUU8h9TZHYx")
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
             HttpResponse<String> response = HttpClient.newHttpClient()
                 .send(request, HttpResponse.BodyHandlers.ofString());
+
+
             localJson = response.body();
             System.out.println(localJson.trim());
 
             localResponse = GSON.fromJson(localJson, ApiApp.LocalResponse.class);
 
 
-            if (localResponse.data.length < 5) {
+            if (localResponse.businesses.length < 5) {
 
                 Platform.runLater(() -> alertError());
 //                System.out.println("YOOOOO");
@@ -328,8 +316,8 @@ public class ApiApp extends Application {
                 System.out.println(GSON.toJson(localResponse));
 
                 System.out.println("********** Name Test: **********");
-                System.out.println(localResponse.data[2].name);
-                System.out.println(localResponse.data[2].fullAddress);
+                System.out.println(localResponse.businesses[2].name);
+                System.out.println(localResponse.businesses[2].location);
             }
 
         } catch (Exception e) {
@@ -340,57 +328,32 @@ public class ApiApp extends Application {
     private void getDistance() {
         try {
 
-            HttpRequest requestDistance = HttpRequest.newBuilder()
-                .uri(URI.create("https://distance-calculator.p.rapidapi.com/v1/one_to_many?start_point="
-                + "(" + ipResponse.latitude + "%2C" + ipResponse.longitude + ")"
-                + "&end_point_1="
-                + "("
-                + localResponse.data[0].latitude + "%2C" + localResponse.data[0].longitude + ")"
-                + "&end_point_2="
-                + "("
-                + localResponse.data[1].latitude + "%2C" + localResponse.data[1].longitude + ")"
-                + "&end_point_3="
-                + "("
-                + localResponse.data[2].latitude + "%2C" + localResponse.data[2].longitude + ")"
-                + "&end_point_4="
-                + "("
-                + localResponse.data[3].latitude + "%2C" + localResponse.data[3].longitude + ")"
-                + "&end_point_5="
-                + "("
-                + localResponse.data[4].latitude + "%2C" + localResponse.data[4].longitude + ")"
-                + "&unit=miles&decimal_places=1"))
-                .header("Content-Type", "application/json")
-                .header("X-RapidAPI-Key", "62ba22f05emshe5b84bc85a06c93p1c699ejsn41e1adb9ef37")
-                .header("X-RapidAPI-Host", "distance-calculator.p.rapidapi.com")
-                .method("GET", HttpRequest.BodyPublishers.noBody())
-                .build();
-            HttpResponse<String> responseDistance = HttpClient.newHttpClient()
-                .send(requestDistance, HttpResponse.BodyHandlers.ofString());
+            String[] address = new String[5];
 
-            distanceJson = responseDistance.body();
-            System.out.println(distanceJson);
+            for (int x = 0; x < 5; x++) {
+                address[x] = "";
+                for (int y = 0; y < localResponse.businesses[x]
+                        .location.displayAddress.length; y++) {
+                    address[x] += localResponse.businesses[x].location.displayAddress[y] + " ";
+                }
+            }
 
-            DistanceResponse distanceResponse = GSON
-                .fromJson(distanceJson, ApiApp.DistanceResponse.class);
+            choice1.setText(localResponse.businesses[0].name);
+            c1details.setText("~" + localResponse.businesses[0].distance + " meters");
+            c1address.setText(address[0]);
+            choice2.setText(localResponse.businesses[1].name);
+            c2details.setText("~" + localResponse.businesses[1].distance + " meters");
+            c2address.setText(address[1]);
+            choice3.setText(localResponse.businesses[2].name);
+            c3details.setText("~" + localResponse.businesses[2].distance + " meters");
+            c3address.setText(address[2]);
+            choice4.setText(localResponse.businesses[3].name);
+            c4details.setText("~" + localResponse.businesses[3].distance + " meters");
+            c4address.setText(address[3]);
+            choice5.setText(localResponse.businesses[4].name);
+            c5details.setText("~" + localResponse.businesses[4].distance + " meters");
+            c5address.setText(address[4]);
 
-            System.out.println("********** PRETTY JSON STRING: **********");
-            System.out.println(GSON.toJson(distanceResponse));
-
-            choice1.setText(localResponse.data[0].name);
-            c1details.setText(distanceResponse.endPoint1.distance + " miles");
-            c1address.setText(localResponse.data[0].fullAddress);
-            choice2.setText(localResponse.data[1].name);
-            c2details.setText(distanceResponse.endPoint2.distance + " miles");
-            c2address.setText(localResponse.data[1].fullAddress);
-            choice3.setText(localResponse.data[2].name);
-            c3details.setText(distanceResponse.endPoint3.distance + " miles");
-            c3address.setText(localResponse.data[2].fullAddress);
-            choice4.setText(localResponse.data[3].name);
-            c4details.setText(distanceResponse.endPoint4.distance + " miles");
-            c4address.setText(localResponse.data[3].fullAddress);
-            choice5.setText(localResponse.data[4].name);
-            c5details.setText(distanceResponse.endPoint5.distance + " miles");
-            c5address.setText(localResponse.data[4].fullAddress);
 /**
             choice1.setText("STOPPING WASTE");
             choice2.setText("STOPPING WASTE");
