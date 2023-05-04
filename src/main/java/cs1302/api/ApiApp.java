@@ -34,6 +34,7 @@ import javafx.scene.control.TextField;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 
 /**
  * REPLACE WITH NON-SHOUTING DESCRIPTION OF YOUR APP.
@@ -116,6 +117,7 @@ public class ApiApp extends Application {
     LocalResponse localResponse;
     Set<String> set;
     TextField cuisine;
+    Label loading;
 
     /**
      * Constructs an {@code ApiApp} object. This default (i.e., no argument)
@@ -144,11 +146,13 @@ public class ApiApp extends Application {
         choice5 = new Label("");
         c5details = new Label();
         c5address = new Label();
-        choice1.setFont(new Font("Verdana", 12));
-        choice2.setFont(new Font("Verdana", 12));
-        choice3.setFont(new Font("Verdana", 12));
-        choice4.setFont(new Font("Verdana", 12));
-        choice5.setFont(new Font("Verdana", 12));
+        choice1.setFont(new Font("Verdana", 14));
+        choice2.setFont(new Font("Verdana", 14));
+        choice3.setFont(new Font("Verdana", 14));
+        choice4.setFont(new Font("Verdana", 14));
+        choice5.setFont(new Font("Verdana", 14));
+        loading = new Label("");
+        loading.setTextAlignment(TextAlignment.RIGHT);
         choice1.setPrefHeight(50.0);
         c1details.setPrefHeight(25.0);
         c1details.setPrefWidth(100.0);
@@ -205,8 +209,7 @@ public class ApiApp extends Application {
         Label notice = new Label("Currently building! ;0");
 
         // setup scene
-//        botHbox.getChildren().addAll(find);
-//        HBox.setHgrow(find, Priority.ALWAYS);
+        botHbox.getChildren().addAll(locationBanner, loading);
         c1.getChildren().addAll(c1details, c1address);
         c2.getChildren().addAll(c2details, c2address);
         c3.getChildren().addAll(c3details, c3address);
@@ -215,15 +218,13 @@ public class ApiApp extends Application {
 
         root.getChildren().addAll( banner, choice1, c1, choice2, c2,
             choice3, c3, choice4, c4, choice5,
-            c5, cuisine, find, locationBanner);
+            c5, cuisine, find, botHbox);
 
 
         Runnable task1 = () -> {
-            getIp();
-
-        };
-
-        find.setOnAction(event -> {
+            find.setDisable(true);
+            Platform.runLater(() -> locationBanner.setText(""));
+            Platform.runLater(() -> loading.setText("Loading..."));
             choice1.setFont(new Font("Verdana", 18));
             choice2.setFont(new Font("Verdana", 18));
             choice3.setFont(new Font("Verdana", 18));
@@ -239,10 +240,15 @@ public class ApiApp extends Application {
 
             getIp();
             getLocal();
-            getDistance();
-//            Thread trd = new Thread(task1);
-//            trd.setDaemon(true);
-//            trd.start();
+            Platform.runLater(() -> getDistance());
+            Platform.runLater(() -> loading.setText(""));
+            find.setDisable(false);
+        };
+
+        find.setOnAction(event -> {
+            Thread trd = new Thread(task1);
+            trd.setDaemon(true);
+            trd.start();
         });
 
         scene = new Scene(root);
@@ -273,7 +279,7 @@ public class ApiApp extends Application {
 
             System.out.println("********** PRETTY JSON STRING: **********");
             System.out.println(GSON.toJson(ipResponse));
-            locationBanner.setText("Device Location: " + ipResponse.city);
+            Platform.runLater(() -> locationBanner.setText("Device Location: " + ipResponse.city));
 
 
         } catch (Exception e) {
@@ -376,8 +382,11 @@ public class ApiApp extends Application {
             choice5.setText(localResponse.data[4].name);
             c5details.setText(distanceResponse.endPoint5.distance + " miles");
             c5address.setText(localResponse.data[4].fullAddress);
-
-
+/**
+            choice1.setText("STOPPING WASTE");
+            choice2.setText("STOPPING WASTE");
+            choice3.setText("STOPPING WASTE");
+*/
         } catch (Exception e) {
             System.out.println("java io exception");
         }
