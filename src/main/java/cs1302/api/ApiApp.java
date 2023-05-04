@@ -270,10 +270,8 @@ public class ApiApp extends Application {
     private void getIp()  {
         try {
             HttpRequest requestIp = HttpRequest.newBuilder()
-                .uri(URI.create("https://find-any-ip-address-or-domain-location-world-wide.p.rapidapi.com/iplocation?apikey=873dbe322aea47f89dcf729dcc8f60e8"))
-                .header("X-RapidAPI-Key", "62ba22f05emshe5b84bc85a06c93p1c699ejsn41e1adb9ef37")
-                .header("X-RapidAPI-Host",
-                "find-any-ip-address-or-domain-location-world-wide.p.rapidapi.com")
+                .uri(URI.create("https://api.ipgeolocation.io/ipgeo?apiKey=0b3393a5422748a4ba1ce594f7b7dff1"))
+                .header("accept", "application/json")
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
             HttpResponse<String> responseIp = HttpClient.newHttpClient()
