@@ -33,6 +33,7 @@ import com.google.gson.annotations.SerializedName;
 import javafx.scene.control.TextField;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import javafx.scene.text.FontWeight;
 
 /**
  * REPLACE WITH NON-SHOUTING DESCRIPTION OF YOUR APP.
@@ -85,12 +86,27 @@ public class ApiApp extends Application {
     Scene scene;
     VBox root;
     Label choice1;
+    Label c1details;
+    Label c1address;
     Label choice2;
+    Label c2details;
+    Label c2address;
     Label choice3;
+    Label c3details;
+    Label c3address;
     Label choice4;
+    Label c4details;
+    Label c4address;
     Label choice5;
+    Label c5details;
+    Label c5address;
     Button find;
     HBox botHbox;
+    HBox c1;
+    HBox c2;
+    HBox c3;
+    HBox c4;
+    HBox c5;
     Font fsize;
     String jsonString = "";
     Label locationBanner;
@@ -108,21 +124,60 @@ public class ApiApp extends Application {
     public ApiApp() {
         root = new VBox();
         botHbox = new HBox();
-
-        choice1 = new Label("Choice 1" + "            " + "distance: ");
-        choice2 = new Label("Choice 2" + "            " + "distance: ");
-        choice3 = new Label("Choice 3" + "            " + "distance: ");
-        choice4 = new Label("Choice 4" + "            " + "distance: ");
-        choice5 = new Label("Choice 5" + "            " + "distance: ");
+        c1 = new HBox();
+        c2 = new HBox();
+        c3 = new HBox();
+        c4 = new HBox();
+        c5 = new HBox();
+        choice1 = new Label(" 1). Think about the type of food you would like." );
+        c1details = new Label();
+        c1address = new Label();
+        choice2 = new Label(" 2). Enter the type you would like in the search bar.");
+        c2details = new Label();
+        c2address = new Label();
+        choice3 = new Label(" 3). Click FIND!");
+        c3details = new Label();
+        c3address = new Label();
+        choice4 = new Label("");
+        c4details = new Label();
+        c4address = new Label();
+        choice5 = new Label("");
+        c5details = new Label();
+        c5address = new Label();
+        choice1.setFont(new Font("Verdana", 12));
+        choice2.setFont(new Font("Verdana", 12));
+        choice3.setFont(new Font("Verdana", 12));
+        choice4.setFont(new Font("Verdana", 12));
+        choice5.setFont(new Font("Verdana", 12));
         choice1.setPrefHeight(50.0);
+        c1details.setPrefHeight(25.0);
+        c1details.setPrefWidth(100.0);
+        c1address.setPrefHeight(25.0);
+
         choice2.setPrefHeight(50.0);
+        c2details.setPrefHeight(25.0);
+        c2details.setPrefWidth(100.0);
+        c2address.setPrefHeight(25.0);
+
         choice3.setPrefHeight(50.0);
+        c3details.setPrefHeight(25.0);
+        c3details.setPrefWidth(100.0);
+        c3address.setPrefHeight(25.0);
+
         choice4.setPrefHeight(50.0);
+        c4details.setPrefHeight(25.0);
+        c4details.setPrefWidth(100.0);
+        c4address.setPrefHeight(25.0);
+
         choice5.setPrefHeight(50.0);
+        c5details.setPrefHeight(25.0);
+        c5details.setPrefWidth(100.0);
+        c5address.setPrefHeight(25.0);
+
         locationBanner = new Label(" ");
 
         find = new Button("FIND");
-        find.setPrefWidth(400);
+        find.setPrefWidth(500);
         find.setPrefHeight(50);
         fsize = new Font(35);
         find.setFont(fsize);
@@ -141,19 +196,26 @@ public class ApiApp extends Application {
         Image bannerImage = new Image("file:resources/FasterFoodBanner.png");
         ImageView banner = new ImageView(bannerImage);
         banner.setPreserveRatio(false);
-        banner.setFitWidth(400);
+        banner.setFitWidth(500);
         banner.setFitHeight(100);
 
-        cuisine.setPrefWidth(400);
+        cuisine.setPrefWidth(500);
 
         // some labels to display information
         Label notice = new Label("Currently building! ;0");
 
         // setup scene
-        botHbox.getChildren().addAll(find);
-        HBox.setHgrow(find, Priority.ALWAYS);
-        root.getChildren().addAll( banner, choice1, choice2,
-            choice3, choice4, choice5, cuisine, botHbox, locationBanner);
+//        botHbox.getChildren().addAll(find);
+//        HBox.setHgrow(find, Priority.ALWAYS);
+        c1.getChildren().addAll(c1details, c1address);
+        c2.getChildren().addAll(c2details, c2address);
+        c3.getChildren().addAll(c3details, c3address);
+        c4.getChildren().addAll(c4details, c4address);
+        c5.getChildren().addAll(c5details, c5address);
+
+        root.getChildren().addAll( banner, choice1, c1, choice2, c2,
+            choice3, c3, choice4, c4, choice5,
+            c5, cuisine, find, locationBanner);
 
 
         Runnable task1 = () -> {
@@ -162,6 +224,19 @@ public class ApiApp extends Application {
         };
 
         find.setOnAction(event -> {
+            choice1.setFont(new Font("Verdana", 18));
+            choice2.setFont(new Font("Verdana", 18));
+            choice3.setFont(new Font("Verdana", 18));
+            choice4.setFont(new Font("Verdana", 18));
+            choice5.setFont(new Font("Verdana", 18));
+
+            c1address.setFont(new Font("Arial", 10));
+            c2address.setFont(new Font("Arial", 10));
+            c3address.setFont(new Font("Arial", 10));
+            c4address.setFont(new Font("Arial", 10));
+            c5address.setFont(new Font("Arial", 10));
+
+
             getIp();
             getLocal();
             getDistance();
@@ -249,6 +324,7 @@ public class ApiApp extends Application {
 
     private void getDistance() {
         try {
+
             HttpRequest requestDistance = HttpRequest.newBuilder()
                 .uri(URI.create("https://distance-calculator.p.rapidapi.com/v1/one_to_many?start_point="
                 + "(" + ipResponse.latitude + "%2C" + ipResponse.longitude + ")"
@@ -285,17 +361,21 @@ public class ApiApp extends Application {
             System.out.println("********** PRETTY JSON STRING: **********");
             System.out.println(GSON.toJson(distanceResponse));
 
-            choice1.setText(localResponse.data[0].name + "                  "
-                + distanceResponse.endPoint1.distance + " miles");
-            choice2.setText(localResponse.data[1].name + "                  "
-                + distanceResponse.endPoint2.distance + " miles");
-            choice3.setText(localResponse.data[2].name + "                  "
-                + distanceResponse.endPoint3.distance + " miles");
-            choice4.setText(localResponse.data[3].name + "                  "
-                + distanceResponse.endPoint4.distance + " miles");
-            choice5.setText(localResponse.data[4].name + "                  "
-                + distanceResponse.endPoint5.distance + " miles");
-
+            choice1.setText(localResponse.data[0].name);
+            c1details.setText(distanceResponse.endPoint1.distance + " miles");
+            c1address.setText(localResponse.data[0].fullAddress);
+            choice2.setText(localResponse.data[1].name);
+            c2details.setText(distanceResponse.endPoint2.distance + " miles");
+            c2address.setText(localResponse.data[1].fullAddress);
+            choice3.setText(localResponse.data[2].name);
+            c3details.setText(distanceResponse.endPoint3.distance + " miles");
+            c3address.setText(localResponse.data[2].fullAddress);
+            choice4.setText(localResponse.data[3].name);
+            c4details.setText(distanceResponse.endPoint4.distance + " miles");
+            c4address.setText(localResponse.data[3].fullAddress);
+            choice5.setText(localResponse.data[4].name);
+            c5details.setText(distanceResponse.endPoint5.distance + " miles");
+            c5address.setText(localResponse.data[4].fullAddress);
 
 
         } catch (Exception e) {
