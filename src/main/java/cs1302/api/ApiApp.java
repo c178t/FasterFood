@@ -47,7 +47,9 @@ public class ApiApp extends Application {
 
     private static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-
+    /**
+     * This class holds the response from ip api.
+     */
     private static class IpResponse {
         String ip;
         String city;
@@ -55,12 +57,16 @@ public class ApiApp extends Application {
         String latitude;
     } // IpResponse
 
-
+    /**
+     * This class holds the addresses.
+     */
     private class LocalLocation {
         @SerializedName("display_address") String[] displayAddress;
     }
 
-
+    /**
+     * This class holds the data from businesses.
+     */
     private class LocalResult {
 
         String name;
@@ -68,6 +74,9 @@ public class ApiApp extends Application {
         LocalLocation location;
     }
 
+    /**
+     * This class holds an array of business data.
+     */
     private class LocalResponse {
         LocalResult[] businesses;
     }
@@ -108,6 +117,9 @@ public class ApiApp extends Application {
     TextField cuisine;
     Label loading;
     Label disclaimer;
+    Label search;
+    HBox bar;
+    ImageView banner;
 
     /**
      * Constructs an {@code ApiApp} object. This default (i.e., no argument)
@@ -121,6 +133,7 @@ public class ApiApp extends Application {
         c3 = new HBox();
         c4 = new HBox();
         c5 = new HBox();
+        bar = new HBox();
         choice1 = new Label(" 1). Think about the type of food you would like." );
         c1details = new Label();
         c1address = new Label();
@@ -142,76 +155,53 @@ public class ApiApp extends Application {
         choice4.setFont(new Font("Verdana", 14));
         choice5.setFont(new Font("Verdana", 14));
         loading = new Label("");
+        search = new Label("Search: ");
         loading.setTextAlignment(TextAlignment.RIGHT);
         choice1.setPrefHeight(50.0);
         c1details.setPrefHeight(25.0);
         c1details.setPrefWidth(200.0);
         c1address.setPrefHeight(25.0);
-        disclaimer = new Label("DISCLAIMER: If you recieve a result for a non-food query, it is a feature :)");
+        disclaimer = new Label
+        ("DISCLAIMER: If you recieve results for a non-food search, it is a feature :)");
         disclaimer.setFont(Font.font("Lucida Sans Unicode", FontPosture.ITALIC, 12));
         choice2.setPrefHeight(50.0);
         c2details.setPrefHeight(25.0);
         c2details.setPrefWidth(200.0);
         c2address.setPrefHeight(25.0);
-
         choice3.setPrefHeight(50.0);
         c3details.setPrefHeight(25.0);
         c3details.setPrefWidth(200.0);
         c3address.setPrefHeight(25.0);
-
         choice4.setPrefHeight(50.0);
         c4details.setPrefHeight(25.0);
         c4details.setPrefWidth(200.0);
         c4address.setPrefHeight(25.0);
-
         choice5.setPrefHeight(50.0);
         c5details.setPrefHeight(25.0);
         c5details.setPrefWidth(200.0);
         c5address.setPrefHeight(25.0);
-
-        locationBanner = new Label(" ");
-
+        locationBanner = new Label("Status: Ready");
         find = new Button("FIND");
         find.setPrefWidth(500);
         find.setPrefHeight(50);
         fsize = new Font(35);
         find.setFont(fsize);
-
         cuisine = new TextField("fast food");
-
     } // ApiApp
 
     /** {@inheritDoc} */
     @Override
     public void start(Stage stage) {
-
         this.stage = stage;
-
         // demonstrate how to load local asset using "file:resources/"
         Image bannerImage = new Image("file:resources/FasterFoodBanner.png");
-        ImageView banner = new ImageView(bannerImage);
+        banner = new ImageView(bannerImage);
         banner.setPreserveRatio(false);
         banner.setFitWidth(500);
         banner.setFitHeight(100);
+        cuisine.setPrefWidth(445);
 
-        cuisine.setPrefWidth(500);
-
-        // some labels to display information
-        Label notice = new Label("Currently building! ;0");
-
-        // setup scene
-        botHbox.getChildren().addAll(locationBanner, loading);
-        c1.getChildren().addAll(c1details, c1address);
-        c2.getChildren().addAll(c2details, c2address);
-        c3.getChildren().addAll(c3details, c3address);
-        c4.getChildren().addAll(c4details, c4address);
-        c5.getChildren().addAll(c5details, c5address);
-
-        root.getChildren().addAll( disclaimer, banner, choice1, c1, choice2, c2,
-            choice3, c3, choice4, c4, choice5,
-            c5, cuisine, find, botHbox);
-
-
+        setScene();
         Runnable task1 = () -> {
             find.setDisable(true);
             Platform.runLater(() -> locationBanner.setText(""));
@@ -235,7 +225,7 @@ public class ApiApp extends Application {
             getIp();
             getLocal();
             if (localResponse.businesses.length >= 5) {
-                Platform.runLater(() -> getDistance());
+                Platform.runLater(() -> setGUI());
                 Platform.runLater(() -> loading.setText(""));
                 Platform.runLater(() -> locationBanner.setText("Device Location: "
                     + ipResponse.city));
@@ -248,22 +238,23 @@ public class ApiApp extends Application {
             trd.setDaemon(true);
             trd.start();
         });
-
         scene = new Scene(root);
-
         // setup stage
         stage.setTitle("FasterFood");
         stage.setScene(scene);
         stage.setOnCloseRequest(event -> Platform.exit());
         stage.sizeToScene();
         stage.show();
-
     } // start
 
+    /**
+     * This method calls the ipgeolocation API to find location of calling device.
+     */
     private void getIp()  {
         try {
             HttpRequest requestIp = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.ipgeolocation.io/ipgeo?apiKey=0b3393a5422748a4ba1ce594f7b7dff1"))
+                .uri(URI.create
+                ("https://api.ipgeolocation.io/ipgeo?apiKey=0b3393a5422748a4ba1ce594f7b7dff1"))
                 .header("accept", "application/json")
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
@@ -282,10 +273,11 @@ public class ApiApp extends Application {
         }
     }
 
+    /**
+     * This method calls the Yelp API to gather local business data.
+     */
     private void getLocal() {
         try {
-
-
 
             String term = URLEncoder.encode(cuisine.getText(), StandardCharsets.UTF_8);
 
@@ -302,7 +294,8 @@ public class ApiApp extends Application {
                 .uri(URI.create(url))
                 .header("accept", "application/json")
                 .header("Authorization",
-                "Bearer AMQwZRqCeVzqgaIWTmZ4ojvgv_L7sy-87QV2vAQPA4aqPOqrb-pfY5gDsnVTKo5705khygJqPY22iUFpOZ3L_sg48hAW3mGrka0LQktaRo5kSaQL0Spn2yUU8h9TZHYx")
+                "Bearer AMQwZRqCeVzqgaIWTmZ4ojvgv_L7sy-87QV2vAQPA4aqPOqrb-pfY5g"
+                + "DsnVTKo5705khygJqPY22iUFpOZ3L_sg48hAW3mGrka0LQktaRo5kSaQL0Spn2yUU8h9TZHYx")
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
             HttpResponse<String> response = HttpClient.newHttpClient()
@@ -318,8 +311,10 @@ public class ApiApp extends Application {
             if (localResponse.businesses.length < 5) {
 
                 Platform.runLater(() -> alertError());
-//                System.out.println("YOOOOO");
+
                 Platform.runLater(() -> loading.setText(""));
+                Platform.runLater(() -> locationBanner.setText("Status: Ready"));
+
             } else {
 
                 System.out.println("********** PRETTY JSON STRING: **********");
@@ -335,7 +330,10 @@ public class ApiApp extends Application {
         }
     }
 
-    private void getDistance() {
+    /**
+     * This method sets all the text in the GUI.
+     */
+    private void setGUI() {
         try {
 
             String[] address = new String[5];
@@ -374,6 +372,9 @@ public class ApiApp extends Application {
         }
     }
 
+    /**
+     * This method pops up a new error window if there are less than 5 relevant results.
+     */
     public static void alertError() {
         TextArea text = new TextArea("Error: There are less than 5 available results."
             + "\n" + "Please enter another query in the search bar.");
@@ -384,6 +385,25 @@ public class ApiApp extends Application {
         alert.showAndWait();
     } // alertError
 
+    /**
+     * This methods sets up the scene.
+     */
+    private void setScene() {
+   // setup scene
+        botHbox.getChildren().addAll(locationBanner, loading);
+        c1.getChildren().addAll(c1details, c1address);
+        c2.getChildren().addAll(c2details, c2address);
+        c3.getChildren().addAll(c3details, c3address);
+        c4.getChildren().addAll(c4details, c4address);
+        c5.getChildren().addAll(c5details, c5address);
+
+        bar.getChildren().addAll(search, cuisine);
+
+        root.getChildren().addAll( disclaimer, banner, choice1, c1, choice2, c2,
+            choice3, c3, choice4, c4, choice5,
+            c5, bar, find, botHbox);
+
+    }
 }
 
  // ApiApp
