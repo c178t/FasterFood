@@ -38,6 +38,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.text.FontPosture;
 
 /**
  * REPLACE WITH NON-SHOUTING DESCRIPTION OF YOUR APP.
@@ -106,6 +107,7 @@ public class ApiApp extends Application {
     Set<String> set;
     TextField cuisine;
     Label loading;
+    Label disclaimer;
 
     /**
      * Constructs an {@code ApiApp} object. This default (i.e., no argument)
@@ -145,7 +147,8 @@ public class ApiApp extends Application {
         c1details.setPrefHeight(25.0);
         c1details.setPrefWidth(100.0);
         c1address.setPrefHeight(25.0);
-
+        disclaimer = new Label("DISCLAIMER: If you recieve a result for a non-food query, it is a feature :)");
+        disclaimer.setFont(Font.font("Lucida Sans Unicode", FontPosture.ITALIC, 12));
         choice2.setPrefHeight(50.0);
         c2details.setPrefHeight(25.0);
         c2details.setPrefWidth(100.0);
@@ -204,7 +207,7 @@ public class ApiApp extends Application {
         c4.getChildren().addAll(c4details, c4address);
         c5.getChildren().addAll(c5details, c5address);
 
-        root.getChildren().addAll( banner, choice1, c1, choice2, c2,
+        root.getChildren().addAll( disclaimer, banner, choice1, c1, choice2, c2,
             choice3, c3, choice4, c4, choice5,
             c5, cuisine, find, botHbox);
 
@@ -213,11 +216,16 @@ public class ApiApp extends Application {
             find.setDisable(true);
             Platform.runLater(() -> locationBanner.setText(""));
             Platform.runLater(() -> loading.setText("Loading..."));
-            choice1.setFont(new Font("Verdana", 18));
-            choice2.setFont(new Font("Verdana", 18));
-            choice3.setFont(new Font("Verdana", 18));
-            choice4.setFont(new Font("Verdana", 18));
-            choice5.setFont(new Font("Verdana", 18));
+            choice1.setText("");
+            choice2.setText("");
+            choice3.setText("");
+            choice4.setText("");
+            choice5.setText("");
+            choice1.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
+            choice2.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
+            choice3.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
+            choice4.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
+            choice5.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
 
             c1address.setFont(new Font("Arial", 10));
             c2address.setFont(new Font("Arial", 10));
