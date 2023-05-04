@@ -41,7 +41,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.text.FontPosture;
 
 /**
- * REPLACE WITH NON-SHOUTING DESCRIPTION OF YOUR APP.
+ * Finds best match for food based on what user inputs in search bar.
+ * Shows the top 5 locations with their addresses and approximate distances for reference.
  */
 public class ApiApp extends Application {
 
