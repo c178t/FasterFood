@@ -161,9 +161,6 @@ public class ApiApp extends Application {
         c1details.setPrefHeight(25.0);
         c1details.setPrefWidth(200.0);
         c1address.setPrefHeight(25.0);
-        disclaimer = new Label
-        ("DISCLAIMER: If you recieve results for a non-food search, it is a feature :)");
-        disclaimer.setFont(Font.font("Lucida Sans Unicode", FontPosture.ITALIC, 12));
         choice2.setPrefHeight(50.0);
         c2details.setPrefHeight(25.0);
         c2details.setPrefWidth(200.0);
@@ -193,7 +190,11 @@ public class ApiApp extends Application {
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-        // demonstrate how to load local asset using "file:resources/"
+
+        disclaimer = new Label
+        ("DISCLAIMER: If you recieve results for a non-food search, it is a feature :)");
+        disclaimer.setFont(Font.font("Lucida Sans Unicode", FontPosture.ITALIC, 12));
+
         Image bannerImage = new Image("file:resources/FasterFoodBanner.png");
         banner = new ImageView(bannerImage);
         banner.setPreserveRatio(false);
