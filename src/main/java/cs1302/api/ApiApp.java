@@ -35,6 +35,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 /**
  * REPLACE WITH NON-SHOUTING DESCRIPTION OF YOUR APP.
@@ -238,9 +241,12 @@ public class ApiApp extends Application {
             c5address.setFont(new Font("Arial", 10));
             getIp();
             getLocal();
-            Platform.runLater(() -> getDistance());
-            Platform.runLater(() -> loading.setText(""));
-            Platform.runLater(() -> locationBanner.setText("Device Location: " + ipResponse.city));
+            if (localResponse.data.length >= 5) {
+                Platform.runLater(() -> getDistance());
+                Platform.runLater(() -> loading.setText(""));
+                Platform.runLater(() -> locationBanner.setText("Device Location: "
+                + ipResponse.city));
+            }
             find.setDisable(false);
         };
 
@@ -281,7 +287,7 @@ public class ApiApp extends Application {
 
 
         } catch (Exception e) {
-            System.out.println("exception occured");
+            System.out.println("exception occured in get IP");
         }
     }
 
@@ -312,17 +318,24 @@ public class ApiApp extends Application {
 
             localResponse = GSON.fromJson(localJson, ApiApp.LocalResponse.class);
 
-            System.out.println("********** PRETTY JSON STRING: **********");
-            System.out.println(GSON.toJson(localResponse));
 
+            if (localResponse.data.length < 5) {
 
-            System.out.println("********** Name Test: **********");
-            System.out.println(localResponse.data[2].name);
-            System.out.println(localResponse.data[2].fullAddress);
+                Platform.runLater(() -> alertError());
+//                System.out.println("YOOOOO");
+                Platform.runLater(() -> loading.setText(""));
+            } else {
 
+                System.out.println("********** PRETTY JSON STRING: **********");
+                System.out.println(GSON.toJson(localResponse));
+
+                System.out.println("********** Name Test: **********");
+                System.out.println(localResponse.data[2].name);
+                System.out.println(localResponse.data[2].fullAddress);
+            }
 
         } catch (Exception e) {
-            System.out.println("java io exception");
+            System.out.println("java io exception in get local");
         }
     }
 
@@ -386,9 +399,20 @@ public class ApiApp extends Application {
             choice3.setText("STOPPING WASTE");
 */
         } catch (Exception e) {
-            System.out.println("java io exception");
+            System.out.println("java io exception in get distance");
         }
     }
+
+    public static void alertError() {
+        TextArea text = new TextArea("Error: There are less than 5 available results."
+            + "\n" + "Please enter another query in the search bar.");
+        text.setEditable(false);
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.getDialogPane().setContent(text);
+        alert.setResizable(false);
+        alert.showAndWait();
+    } // alertError
+
 }
 
  // ApiApp
