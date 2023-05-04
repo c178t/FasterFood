@@ -145,28 +145,28 @@ public class ApiApp extends Application {
         loading.setTextAlignment(TextAlignment.RIGHT);
         choice1.setPrefHeight(50.0);
         c1details.setPrefHeight(25.0);
-        c1details.setPrefWidth(100.0);
+        c1details.setPrefWidth(200.0);
         c1address.setPrefHeight(25.0);
         disclaimer = new Label("DISCLAIMER: If you recieve a result for a non-food query, it is a feature :)");
         disclaimer.setFont(Font.font("Lucida Sans Unicode", FontPosture.ITALIC, 12));
         choice2.setPrefHeight(50.0);
         c2details.setPrefHeight(25.0);
-        c2details.setPrefWidth(100.0);
+        c2details.setPrefWidth(200.0);
         c2address.setPrefHeight(25.0);
 
         choice3.setPrefHeight(50.0);
         c3details.setPrefHeight(25.0);
-        c3details.setPrefWidth(100.0);
+        c3details.setPrefWidth(200.0);
         c3address.setPrefHeight(25.0);
 
         choice4.setPrefHeight(50.0);
         c4details.setPrefHeight(25.0);
-        c4details.setPrefWidth(100.0);
+        c4details.setPrefWidth(200.0);
         c4address.setPrefHeight(25.0);
 
         choice5.setPrefHeight(50.0);
         c5details.setPrefHeight(25.0);
-        c5details.setPrefWidth(100.0);
+        c5details.setPrefWidth(200.0);
         c5address.setPrefHeight(25.0);
 
         locationBanner = new Label(" ");
@@ -285,6 +285,8 @@ public class ApiApp extends Application {
     private void getLocal() {
         try {
 
+
+
             String term = URLEncoder.encode(cuisine.getText(), StandardCharsets.UTF_8);
 
             String termUri = String.format("term=%s", term);
@@ -347,19 +349,19 @@ public class ApiApp extends Application {
             }
 
             choice1.setText(localResponse.businesses[0].name);
-            c1details.setText("~" + localResponse.businesses[0].distance + " meters");
+            c1details.setText("~" + (int)localResponse.businesses[0].distance + " meters");
             c1address.setText(address[0]);
             choice2.setText(localResponse.businesses[1].name);
-            c2details.setText("~" + localResponse.businesses[1].distance + " meters");
+            c2details.setText("~" + (int)localResponse.businesses[1].distance + " meters");
             c2address.setText(address[1]);
             choice3.setText(localResponse.businesses[2].name);
-            c3details.setText("~" + localResponse.businesses[2].distance + " meters");
+            c3details.setText("~" + (int)localResponse.businesses[2].distance + " meters");
             c3address.setText(address[2]);
             choice4.setText(localResponse.businesses[3].name);
-            c4details.setText("~" + localResponse.businesses[3].distance + " meters");
+            c4details.setText("~" + (int)localResponse.businesses[3].distance + " meters");
             c4address.setText(address[3]);
             choice5.setText(localResponse.businesses[4].name);
-            c5details.setText("~" + localResponse.businesses[4].distance + " meters");
+            c5details.setText("~" + (int)localResponse.businesses[4].distance + " meters");
             c5address.setText(address[4]);
 
 /**
