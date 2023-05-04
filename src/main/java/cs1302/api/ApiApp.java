@@ -236,12 +236,11 @@ public class ApiApp extends Application {
             c3address.setFont(new Font("Arial", 10));
             c4address.setFont(new Font("Arial", 10));
             c5address.setFont(new Font("Arial", 10));
-
-
             getIp();
             getLocal();
             Platform.runLater(() -> getDistance());
             Platform.runLater(() -> loading.setText(""));
+            Platform.runLater(() -> locationBanner.setText("Device Location: " + ipResponse.city));
             find.setDisable(false);
         };
 
@@ -279,7 +278,6 @@ public class ApiApp extends Application {
 
             System.out.println("********** PRETTY JSON STRING: **********");
             System.out.println(GSON.toJson(ipResponse));
-            Platform.runLater(() -> locationBanner.setText("Device Location: " + ipResponse.city));
 
 
         } catch (Exception e) {
