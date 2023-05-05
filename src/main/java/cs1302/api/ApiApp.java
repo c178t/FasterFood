@@ -208,16 +208,6 @@ public class ApiApp extends Application {
             find.setDisable(true);
             Platform.runLater(() -> locationBanner.setText(""));
             Platform.runLater(() -> loading.setText("Loading..."));
-            choice1.setText("");
-            choice2.setText("");
-            choice3.setText("");
-            choice4.setText("");
-            choice5.setText("");
-            choice1.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
-            choice2.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
-            choice3.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
-            choice4.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
-            choice5.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
 
             c1address.setFont(new Font("Arial", 10));
             c2address.setFont(new Font("Arial", 10));
@@ -227,6 +217,18 @@ public class ApiApp extends Application {
             getIp();
             getLocal();
             if (localResponse.businesses.length >= 5) {
+
+                Platform.runLater(() -> choice1.setText(""));
+                Platform.runLater(() -> choice2.setText(""));
+                Platform.runLater(() -> choice3.setText(""));
+                Platform.runLater(() -> choice4.setText(""));
+                Platform.runLater(() -> choice5.setText(""));
+                choice1.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
+                choice2.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
+                choice3.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
+                choice4.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
+                choice5.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
+
                 Platform.runLater(() -> setGUI());
                 Platform.runLater(() -> loading.setText(""));
                 Platform.runLater(() -> locationBanner.setText("Device Location: "
@@ -323,9 +325,6 @@ public class ApiApp extends Application {
                 System.out.println("********** PRETTY JSON STRING: **********");
                 System.out.println(GSON.toJson(localResponse));
 
-                System.out.println("********** Name Test: **********");
-                System.out.println(localResponse.businesses[2].name);
-                System.out.println(localResponse.businesses[2].location);
             }
 
         } catch (Exception e) {
@@ -365,11 +364,6 @@ public class ApiApp extends Application {
             c5details.setText("~" + (int)localResponse.businesses[4].distance + " meters");
             c5address.setText(address[4]);
 
-/**
-            choice1.setText("STOPPING WASTE");
-            choice2.setText("STOPPING WASTE");
-            choice3.setText("STOPPING WASTE");
-*/
         } catch (Exception e) {
             System.out.println("java io exception in get distance");
         }
