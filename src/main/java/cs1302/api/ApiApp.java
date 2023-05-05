@@ -217,7 +217,6 @@ public class ApiApp extends Application {
             getIp();
             getLocal();
             if (localResponse.businesses.length >= 5) {
-
                 Platform.runLater(() -> choice1.setText(""));
                 Platform.runLater(() -> choice2.setText(""));
                 Platform.runLater(() -> choice3.setText(""));
@@ -228,7 +227,6 @@ public class ApiApp extends Application {
                 choice3.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
                 choice4.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
                 choice5.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
-
                 Platform.runLater(() -> setGUI());
                 Platform.runLater(() -> loading.setText(""));
                 Platform.runLater(() -> locationBanner.setText("Device Location: "
