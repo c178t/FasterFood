@@ -242,6 +242,7 @@ public class ApiApp extends Application {
         });
         scene = new Scene(root);
         // setup stage
+        stage.setResizable(false);
         stage.setTitle("FasterFood");
         stage.setScene(scene);
         stage.setOnCloseRequest(event -> Platform.exit());
@@ -346,7 +347,7 @@ public class ApiApp extends Application {
                         .location.displayAddress.length; y++) {
                     address[x] += localResponse.businesses[x].location.displayAddress[y] + " ";
                 }
-            }
+            } //loop to set address in array
 
             choice1.setText(localResponse.businesses[0].name);
             c1details.setText("~" + (int)localResponse.businesses[0].distance + " meters");
