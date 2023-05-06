@@ -117,7 +117,6 @@ public class ApiApp extends Application {
     Set<String> set;
     TextField cuisine;
     Label loading;
-    Label disclaimer;
     Label search;
     HBox bar;
     ImageView banner;
@@ -191,10 +190,6 @@ public class ApiApp extends Application {
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-
-        disclaimer = new Label
-        ("DISCLAIMER: If you recieve results for a non-food search, it is a feature :)");
-        disclaimer.setFont(Font.font("Lucida Sans Unicode", FontPosture.ITALIC, 12));
 
         Image bannerImage = new Image("file:resources/FasterFoodBanner.png");
         banner = new ImageView(bannerImage);
@@ -394,7 +389,7 @@ public class ApiApp extends Application {
 
         bar.getChildren().addAll(search, cuisine);
 
-        root.getChildren().addAll( disclaimer, banner, choice1, c1, choice2, c2,
+        root.getChildren().addAll( banner, choice1, c1, choice2, c2,
             choice3, c3, choice4, c4, choice5,
             c5, bar, find, botHbox);
 
